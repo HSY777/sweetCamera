@@ -454,7 +454,7 @@ var imageProcessing = () => {
 
 	var canvas = document.getElementById("c_capture");
 	bRes = Canvas2Image.saveAsBMP(canvas, true);
-	console.log(bRes.src);
+	//console.log(bRes.src);
 
 	setTimeout(() => {
 		loadingPageSet();
@@ -477,11 +477,78 @@ var loadingPageSet = () => {
 
 var transmitToESP32 = () => {
 	if(connectStateBLE === true){
-		var base64photo = bRes.src;
-		//console.log('btnRelayOn = '+ base64photo);
-		var length = base64photo.length;
-		// var dataBuffer;
+		var add = 10;
 
+		setTimeout(() => {
+			var bmp = 0;
+			var bmpRaw = 0;
+			var bmpRawBitLength = 0;
+			var TR_uint8 = 0;
+			var TR_bufferCount = 0;
+			var bmpSplit = 0;
+			var TR_dataBuffer = [];
+			var TR_dataBufferCount = 0;
+
+			//bmp = bRes.src;
+			bmpSplit = bRes.src.split(',');
+			console.log("bmpSplit: " + bmpSplit[1]);
+			bmp = bmpSplit[1];
+			bmpRaw = atob(bmp);
+			bmpRawBitLength = bmpRaw.length;
+			TR_uint8 = new Uint8Array(((bmpRawBitLength - 54) / 3));
+			
+			// console.log("bmpRawBitLength: " + bmpRawBitLength);
+			// console.log("bmpRawBitLength / 3 " + bmpRawBitLength / 3);
+			// console.log("TR_uint8: " + TR_uint8.length);
+
+			for (var i = 54; i < bmpRawBitLength; i++){
+				if(i % 3 == 0){
+					// console.log(TR_bufferCount);
+					TR_uint8[TR_bufferCount] = bmpRaw.charCodeAt(i);
+					TR_bufferCount++;
+					// if(TR_bufferCount % 300 == 0){
+					// 	for(var j = 0; j < 300; j++){
+					// 		TR_dataBuffer[TR_dataBufferCount] += String(TR_uint8[j]);
+					// 	}
+					// 	TR_dataBufferCount++;
+					// }
+					// console.log(bmpRaw.charCodeAt(i));
+				}
+			}
+			
+			setTimeout(() => {
+				// console.log(TR_uint8.length);
+				// for (var i = 0; i < 152; i++){
+				// 	databuffer += 
+				// }
+				// for(var i = 0; i < 11000; i++){
+				// 	// writeandreaddata(String(TR_uint8[i]) + ' i: ' + String(i));
+				// 	writeandreaddata('1');
+				// }
+				setTimeout(() => {
+					// console.log(TR_uint8);
+						
+					// for(var i = 0; i < 152; i++){
+						
+					// }
+					
+				}, 10)
+			}, 10);
+		}, 10);		
+
+		var intervalID = setInterval(() => {
+			const progress = document.querySelector('.progress-percent');
+			progress.style.opacity = 1;
+			progress.style.width = add + '%';
+			// console.log(add);
+			if(printFinishFlag == 1 || add == 110){
+				clearInterval(intervalID);
+				printFinishFlag = 0;
+				progress.style.width = 10 + '%';
+				reloadTakePicturePage();
+			}
+			add += 10;
+		},1000)
 		//writeandreaddata(base64photo);
 
 		// for(var i = 0; i < length; i++){
@@ -499,29 +566,9 @@ var transmitToESP32 = () => {
 		//   console.log('BLE transmit start: ' + i);
 		//  writeandreaddata(divisionData[i]);
 		// }
-		reloadTakePicturePage();
 	} else {
-		// setTimeout(() => {
-		// 	printFinishFlag = 1;
-		// }, 5000);
-		var add = 10;
-
-		var intervalID = setInterval(() => {
-			const progress = document.querySelector('.progress-percent');
-			progress.style.opacity = 1;
-			progress.style.width = add + '%';
-			
-			console.log(add);
-			if(printFinishFlag == 1 || add == 110){
-				clearInterval(intervalID);
-				printFinishFlag = 0;
-				progress.style.width = 10 + '%';
-				reloadTakePicturePage();
-			}
-			add += 10;
-		},1000)
-		//alert("블루투스 연결을 확인해주세요");
-		//reloadTakePicturePage();
+		alert("블루투스 연결을 확인해주세요");
+		reloadTakePicturePage();
 	}
 	$('.page2 button.p_reshot').attr("disabled", false);
 }
@@ -546,7 +593,7 @@ var takePictureSequence = () => {
 				console.log(1);
 				$("#capture").attr("src", "image/count1.png");
 				setTimeout(() => {
-					console.log('찰칵');
+					console.log('shot');
 
 					CameraPreview.takePicture(function(imgData){
 						$("#capture").attr("src", "image/empty.png");
@@ -574,13 +621,6 @@ var page1Load = () => {
 		}, 10);
 	}, 10);
 	
-}
-
-var printPhotoPageSet = () => {
-	$('button#printButton').attr("disabled", true);
-	$('#originalPicture').hide();
-	$('button#reshoot').hide();
-	$('#canvasPicture').show();
 }
 
 var printPhotoSequence = () => {
