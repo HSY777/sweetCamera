@@ -567,7 +567,13 @@ var transmitToESP32 = () => {
 		//  writeandreaddata(divisionData[i]);
 		// }
 	} else {
-		alert("블루투스 연결을 확인해주세요");
+		// alert("블루투스 연결을 확인해주세요");
+		var xhttp = new XMLHttpRequest();
+		var a = 'testData:123456789'
+		url = 'http://192.168.43.94/' + a;
+	
+		xhttp.open("GET", url, true);
+		xhttp.send();
 		reloadTakePicturePage();
 	}
 	$('.page2 button.p_reshot').attr("disabled", false);
