@@ -20,6 +20,17 @@ var connectErrorCount = 0
 var captureImage = 0;
 var printFinishFlag = 0;
 
+var bmp = 0;
+var bmpRaw = 0;
+var bmpRawBitLength = 0;
+var TR_uint8 = 0;
+var TR_bufferCount = 0;
+var bmpSplit = 0;
+var TR_dataBuffer = [];
+var TR_dataBufferCount = 0;
+
+
+
 function initiateTestSequence()
 {
 	testCount = 0
@@ -480,14 +491,14 @@ var transmitToESP32 = () => {
 		var add = 10;
 
 		setTimeout(() => {
-			var bmp = 0;
-			var bmpRaw = 0;
-			var bmpRawBitLength = 0;
-			var TR_uint8 = 0;
-			var TR_bufferCount = 0;
-			var bmpSplit = 0;
-			var TR_dataBuffer = [];
-			var TR_dataBufferCount = 0;
+			bmp = 0;
+			bmpRaw = 0;
+			bmpRawBitLength = 0;
+			TR_uint8 = 0;
+			TR_bufferCount = 0;
+			bmpSplit = 0;
+			TR_dataBuffer = [];
+			TR_dataBufferCount = 0;
 
 			//bmp = bRes.src;
 			bmpSplit = bRes.src.split(',');
@@ -536,19 +547,19 @@ var transmitToESP32 = () => {
 			}, 10);
 		}, 10);		
 
-		var intervalID = setInterval(() => {
-			const progress = document.querySelector('.progress-percent');
-			progress.style.opacity = 1;
-			progress.style.width = add + '%';
-			// console.log(add);
-			if(printFinishFlag == 1 || add == 110){
-				clearInterval(intervalID);
-				printFinishFlag = 0;
-				progress.style.width = 10 + '%';
-				reloadTakePicturePage();
-			}
-			add += 10;
-		},1000)
+		// var intervalID = setInterval(() => {
+		// 	const progress = document.querySelector('.progress-percent');
+		// 	progress.style.opacity = 1;
+		// 	progress.style.width = add + '%';
+		// 	// console.log(add);
+		// 	if(printFinishFlag == 1 || add == 110){
+		// 		clearInterval(intervalID);
+		// 		printFinishFlag = 0;
+		// 		progress.style.width = 10 + '%';
+		// 		reloadTakePicturePage();
+		// 	}
+		// 	add += 10;
+		// },1000)
 		//writeandreaddata(base64photo);
 
 		// for(var i = 0; i < length; i++){
@@ -570,11 +581,31 @@ var transmitToESP32 = () => {
 		// alert("블루투스 연결을 확인해주세요");
 		var xhttp = new XMLHttpRequest();
 		var a = 'testData:123456789'
+		//var a = TR_uint8;
 		url = 'http://192.168.43.94/' + a;
 	
 		xhttp.open("GET", url, true);
 		xhttp.send();
-		reloadTakePicturePage();
+		console.log('transmit start');
+		setTimeout(() => {
+			var add = 10;
+			var intervalID = setInterval(() => {
+				console.log('update progressbar');
+				const progress = document.querySelector('.progress-percent');
+				progress.style.opacity = 1;
+				progress.style.width = add + '%';
+				console.log(add);
+				if(printFinishFlag == 1 || add == 110){
+					clearInterval(intervalID);
+					printFinishFlag = 0;
+					add = 10;
+					progress.style.width = 10 + '%';
+					reloadTakePicturePage();
+				}
+				add += 10;
+			},1000)
+		}, 10);
+		// reloadTakePicturePage();
 	}
 	$('.page2 button.p_reshot').attr("disabled", false);
 }
@@ -637,7 +668,7 @@ document.addEventListener('deviceready', function(){
 
     $(document).ready(() => {    
         CameraPreview.startCamera({x: 0, y: 64, width: photoArea_width, height: photoArea_height, toBack: true, previewDrag: false, tapPhoto: false});
-			findDevice();
+			//findDevice();
 			initPageSet();
 
         $('.home button.shotbutton').click(() =>{
