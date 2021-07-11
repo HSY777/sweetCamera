@@ -429,6 +429,44 @@ button, button:focus {
     transition: 1s ease;
 }
 
+.loadingpage {
+    display: flex;
+    flex-direction: column;
+    padding: 280px 80px;
+}
+
+
+.loadingpage .loader {
+    margin-left: 60px;
+    border: 16px solid #f3f3f3; /* Light grey */
+    border-top: 16px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    animation: loaderspin 2s linear infinite;
+}
+
+.loadingpage .text1 {
+    display: flex;
+    justify-content: space-around;
+    
+    padding: 20px var(--padding) 0 var(--padding);
+
+}
+
+.loadingpage .text2 {
+    display: flex;
+    justify-content: space-around;
+    padding: var(--padding);
+}
+
+
+
+@keyframes loaderspin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 
 
 
