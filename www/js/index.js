@@ -37,6 +37,7 @@ var SC_enter = '0x0A';
 var SC_Fullcut = '0x1b 0x69';
 var SC_Halfcut = '0x1b 0x6D';
 var SC_rasterImage_set = '0x1d 0x76 0x30 0x00 0x50 0x00 0x40 0x01'; // 래스터 이미지(가로모드), 노멀모드, 가로줄 80 byte (640bit), 세로줄 320줄 
+//var SC_rasterImage_set = '0x1d 0x76 0x30 0x00 0x2d 0x00 0x69 0x00'; // 래스터 이미지(가로모드), 노멀모드, 가로줄 45 byte (360bit), 세로줄 105줄 
 var SC_rasterImage_data_H = '';
 var SC_rasterImage_data_L = '';
 
@@ -550,12 +551,13 @@ var bitmapParsing = () => {
 
 
 
-var makeSerialCommand = (SC_data) => {
+var makeSerialCommand = (SC_data) => { 
 	var SCcount = 0;
 	var makeSumBuff = 0;
 	var addCount = 7;
 	var string_HexBuff = '';
 	var loopInit = 0;
+	var aaa = 0;
 
 	loopInit = (SC_data == 'H') ? 0 : TR_uint8.length / 2 ;
 	
@@ -565,8 +567,10 @@ var makeSerialCommand = (SC_data) => {
 			makeSumBuff += Math.pow(2, addCount);	//7: 128, 6: 0, 5: 32, 4: 16 3: 0 2: 0 1: 2, 0: 0;
 		}		
 		if(addCount == 0){
+			aaa++
 			hexMark = (makeSumBuff <= 16) ? '0x0' : '0x'
 			//string_HexBuff = hexMark + makeSumBuff.toString(16) + ' i:' + String(i);
+			//string_HexBuff = hexMark + makeSumBuff.toString(16) + ' 갯수:' + String(aaa);
 			string_HexBuff = hexMark + makeSumBuff.toString(16);
 			if(SC_data == 'H'){
 				SC_rasterImage_data_H += ' ' + string_HexBuff ;
@@ -586,7 +590,7 @@ var makeSerialCommand = (SC_data) => {
 var dataParsing = () => {
 	bitmapParsing();
 	makeSerialCommand('H');
-	makeSerialCommand('L');
+	//makeSerialCommand('L');
 	setTimeout(() => {
 		console.log(SC_rasterImage_data_H);
 		console.log(SC_rasterImage_data_L);
