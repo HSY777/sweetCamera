@@ -44,6 +44,8 @@ var SC_rasterImage_set_80Byte320Line = '0x1d/0x76/0x30/0x00/0x50/0x00/0x40/0x01/
 var SC_rasterImage_data_H = '';
 var SC_rasterImage_data_L = '';
 
+var bmptest = ''; //비트맵 캡쳐용
+
 function initiateTestSequence()
 {
 	testCount = 0
@@ -528,7 +530,8 @@ var bitmapParsing = () => {
 	bmpSplit = 0;
 	TR_dataBuffer = '';
 	TR_dataBufferCount = 0;
-
+	
+	//bmpSplit = bmptest.split(',');
 	bmpSplit = bRes.src.split(',');
 	console.log("bmpSplit: " + bmpSplit[1]);
 	bmp = bmpSplit[1];
@@ -647,10 +650,12 @@ var transmitToESP32 = () => {
 	var xhttp = new XMLHttpRequest();
 	var TCPdata = '';
 	
-	TCPdata += SC_rasterImage_set_80Byte320Line;
-	TCPdata += SC_rasterImage_data_H;
+	TCPdata += instaHeader_imageData;  //고정이미지
+	TCPdata += SC_rasterImage_set_80Byte320Line;  
+	TCPdata += SC_rasterImage_data_H;	//사진찍은 이미지 (영수증프린터에서 한번에 출력할수있는 비트 갯수가 넘어가서 SC_rasterImage_data_H와 SC_rasterImage_data_L로 나누어놓음)
 	TCPdata += SC_rasterImage_set_80Byte320Line;
 	TCPdata += SC_rasterImage_data_L;
+	TCPdata += instaTextBox_imageData;  //고정이미지
 
 	//var TCPdata = '0x00/0x01/0x12/'
 	//var a = TR_uint8;
