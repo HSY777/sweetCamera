@@ -37,7 +37,9 @@ var SC_enter = '0x0A';
 var SC_Fullcut = '0x1b 0x69';
 var SC_Halfcut = '0x1b 0x6D';
 var SC_rasterImage_set = '0x1d 0x76 0x30 0x00 0x50 0x00 0x40 0x01'; // 래스터 이미지(가로모드), 노멀모드, 가로줄 80 byte (640bit), 세로줄 320줄 
-//var SC_rasterImage_set = '0x1d 0x76 0x30 0x00 0x2d 0x00 0x69 0x00'; // 래스터 이미지(가로모드), 노멀모드, 가로줄 45 byte (360bit), 세로줄 105줄 
+//var SC_rasterImage_set = '0x1d 0x76 0x30 0x00 0x2d 0x00 0xd2 0x00'; // 래스터 이미지(가로모드), 노멀모드, 가로줄 45 byte (360bit), 세로줄 210줄 
+//var SC_rasterImage_set = '0x1d/0x76/0x30/0x00/0x2d/0x00/0xd2/0x00/';
+
 var SC_rasterImage_data_H = '';
 var SC_rasterImage_data_L = '';
 
@@ -568,15 +570,17 @@ var makeSerialCommand = (SC_data) => {
 		}		
 		if(addCount == 0){
 			aaa++
-			hexMark = (makeSumBuff <= 16) ? '0x0' : '0x'
+			hexMark = (makeSumBuff <= 15) ? '0x0' : '0x'
 			//string_HexBuff = hexMark + makeSumBuff.toString(16) + ' i:' + String(i);
 			//string_HexBuff = hexMark + makeSumBuff.toString(16) + ' 갯수:' + String(aaa);
 			string_HexBuff = hexMark + makeSumBuff.toString(16);
 			if(SC_data == 'H'){
-				SC_rasterImage_data_H += ' ' + string_HexBuff ;
+				// SC_rasterImage_data_H += ' ' + string_HexBuff ;
+				SC_rasterImage_data_H += string_HexBuff + '/' ;
 			}
 			else if(SC_data == 'L'){
-				SC_rasterImage_data_L += ' ' + string_HexBuff ;
+				// SC_rasterImage_data_L += ' ' + string_HexBuff ;
+				SC_rasterImage_data_L += string_HexBuff + '/' ;
 			}
 			addCount = 8;
 			makeSumBuff = 0;
@@ -590,7 +594,7 @@ var makeSerialCommand = (SC_data) => {
 var dataParsing = () => {
 	bitmapParsing();
 	makeSerialCommand('H');
-	//makeSerialCommand('L');
+	makeSerialCommand('L');
 	setTimeout(() => {
 		console.log(SC_rasterImage_data_H);
 		console.log(SC_rasterImage_data_L);
@@ -611,6 +615,8 @@ var startReceiptPrint = () => {
 	//시리얼통신, 프로그레스바
 	// SC_rasterImage_data_L + SC_rasterImage_set
 	
+	transmitToESP32();
+
 	var add = 10;
 	var intervalID = setInterval(() => {
 		console.log('update progressbar');
@@ -637,6 +643,17 @@ var startReceiptPrint = () => {
 }
 
 var transmitToESP32 = () => {
+	var xhttp = new XMLHttpRequest();
+	//var TCPdata = '0x00/0x01/0x12/'
+	var TCPdata = SC_rasterImage_data_H;
+	//var a = TR_uint8;
+	url = 'http://192.168.4.1/$' + '0x1d/0x76/0x30/0x00/0x2d/0x00/0xd2/0x00/' + TCPdata + '$';
+	xhttp.open("GET", url, true);
+	xhttp.send();
+	console.log('transmit start');
+}
+
+var transmitToESP32_ = () => {
 	// $('.page2 button.p_reshot').attr("disabled", true);
 	$(".page2 #resultpreview").attr("src", captureImage);
 	if(connectStateBLE === true){
@@ -739,10 +756,10 @@ var transmitToESP32 = () => {
 		var TCPdata = TR_dataBuffer;
 		//var a = TR_uint8;
 		url = 'http://192.168.4.1/$' + TCPdata;
-	
 		xhttp.open("GET", url, true);
 		xhttp.send();
 		console.log('transmit start');
+
 		setTimeout(() => {
 			var add = 10;
 			var intervalID = setInterval(() => {
