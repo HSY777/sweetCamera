@@ -211,7 +211,8 @@ button, button:focus {
 }
 
 .page1 header .p_reshot {
-    padding: 0 var(--padding);
+    /* padding: 0 var(--padding); */
+    padding: var(--padding);
 }
 
 .page1 header .menu {
@@ -321,7 +322,8 @@ button, button:focus {
 }
 
 .page1 .shotBtn .box {
-    
+    padding-left: 30px;
+
 }
 
 .page1 .shotBtn img {
@@ -356,7 +358,8 @@ button, button:focus {
 }
 
 .page2 header .p_reshot {
-    padding: 0 var(--padding);
+    /* padding: 0 var(--padding); */
+    padding: var(--padding);
 }
 
 .page2 header .menu {

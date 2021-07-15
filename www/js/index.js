@@ -36,9 +36,10 @@ var finishImageProcessing = 0;
 var SC_enter = '0x0A';
 var SC_Fullcut = '0x1b 0x69';
 var SC_Halfcut = '0x1b 0x6D';
-var SC_rasterImage_set = '0x1d 0x76 0x30 0x00 0x50 0x00 0x40 0x01'; // 래스터 이미지(가로모드), 노멀모드, 가로줄 80 byte (640bit), 세로줄 320줄 
+//var SC_rasterImage_set = '0x1d 0x76 0x30 0x00 0x50 0x00 0x40 0x01'; // 래스터 이미지(가로모드), 노멀모드, 가로줄 80 byte (640bit), 세로줄 320줄 
 //var SC_rasterImage_set = '0x1d 0x76 0x30 0x00 0x2d 0x00 0xd2 0x00'; // 래스터 이미지(가로모드), 노멀모드, 가로줄 45 byte (360bit), 세로줄 210줄 
-//var SC_rasterImage_set = '0x1d/0x76/0x30/0x00/0x2d/0x00/0xd2/0x00/';
+var SC_rasterImage_set_45Byte210Line = '0x1d/0x76/0x30/0x00/0x2d/0x00/0xd2/0x00/';
+var SC_rasterImage_set_80Byte320Line = '0x1d/0x76/0x30/0x00/0x50/0x00/0x40/0x01/';
 
 var SC_rasterImage_data_H = '';
 var SC_rasterImage_data_L = '';
@@ -472,18 +473,18 @@ var imageProcessing = () => {
 	
 		let imgElement = document.getElementById('c_capture');
 		let mat = cv.imread(imgElement);
-		let gray = new cv.Mat();
-		//let dsize = new cv.Size(640, 640);
-		let dsize = new cv.Size(360, 420);
+		let dst = new cv.Mat();
+		let dsize = new cv.Size(640, 640);
+		//let dsize = new cv.Size(360, 420);
 		
 		cv.resize(mat, mat, dsize, 0, 0, cv.INTER_AREA);
-		cv.cvtColor(mat, gray, cv.COLOR_RGB2GRAY, 0);
-		// cv.threshold(gray, gray, 100, 200, cv.THRESH_BINARY);
-		cv.adaptiveThreshold(gray, gray, 200, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 3, 2);
-		cv.imshow('c_capture', gray);
+		cv.cvtColor(mat, dst, cv.COLOR_RGB2GRAY, 0);
+		// cv.threshold(dst, dst, 100, 200, cv.THRESH_BINARY);
+		cv.adaptiveThreshold(dst, dst, 200, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 3, 2);
+		cv.imshow('c_captureArea', dst);
 		mat.delete();
 
-		var canvas = document.getElementById("c_capture");
+		var canvas = document.getElementById("c_captureArea");
 		bRes = Canvas2Image.saveAsBMP(canvas, true);
 		console.log('finish imageProcessing');
 		//console.log(bRes.src);
@@ -644,16 +645,23 @@ var startReceiptPrint = () => {
 
 var transmitToESP32 = () => {
 	var xhttp = new XMLHttpRequest();
+	var TCPdata = '';
+	
+	TCPdata += SC_rasterImage_set_80Byte320Line;
+	TCPdata += SC_rasterImage_data_H;
+	TCPdata += SC_rasterImage_set_80Byte320Line;
+	TCPdata += SC_rasterImage_data_L;
+
 	//var TCPdata = '0x00/0x01/0x12/'
-	var TCPdata = SC_rasterImage_data_H;
 	//var a = TR_uint8;
-	url = 'http://192.168.4.1/$' + '0x1d/0x76/0x30/0x00/0x2d/0x00/0xd2/0x00/' + TCPdata + '$';
+	url = 'http://192.168.4.1/$' + TCPdata + '$';
+
 	xhttp.open("GET", url, true);
 	xhttp.send();
 	console.log('transmit start');
 }
 
-var transmitToESP32_ = () => {
+var transmitToESP32_xxxx = () => { //  << 안씀
 	// $('.page2 button.p_reshot').attr("disabled", true);
 	$(".page2 #resultpreview").attr("src", captureImage);
 	if(connectStateBLE === true){
@@ -780,7 +788,7 @@ var transmitToESP32_ = () => {
 		}, 10);
 		// reloadTakePicturePage();
 	}
-	$('.page2 button.p_reshot').attr("disabled", false);
+	// $('.page2 button.p_reshot').attr("disabled", false);
 }
 
 var initPageSet = () => {
@@ -817,7 +825,10 @@ var takePictureSequence = () => {
 
 						$('.home button.shotbutton').attr("disabled", false);
 						page1Load();
-
+						setTimeout(() => {
+							$('.page1 button.printbutton').attr("disabled", true);
+							printPhotoSequence();
+						}, 500);
 					});
 				}, 1000)
 			}, 1000)      

@@ -70,9 +70,9 @@
 
     <page class="page1">
         <header>
-            <button class="p_reshot">
+            <div class="p_reshot">
                 <img src="image/camera.png" alt="" height="40px" width="100px">    
-            </button>    
+            </div>    
             <div class="menu">
                 <button class="dot">
                     <img src="image/menu.PNG" alt="">
@@ -82,6 +82,7 @@
            
         <section class="photopreview">
             <canvas id="c_capture"  width="360" height="420px"> </canvas>
+            <!-- <canvas id="c_capture"  width="640px" height="640px"> </canvas> -->
         </section>
     
         <section class="buttonimg">
@@ -106,23 +107,27 @@
         </section>
     
         <section class="timeinfo">
-            <span class="p_text">Click Start Button</span>
+            <!-- <span class="p_text">Click Start Button</span> -->
+            <span class="p_text">Wait . . .</span>
         </section>
     
         <section class="shotBtn">
             <div class="box">
-                <button class="printbutton">
-                    <img src="image/printbtn.png" alt="">
-                </button>
+                <div class="printbutton">
+                    <!-- <img src="image/printbtn.png" alt=""> -->
+                    <img src="image/shotbtn.png" alt="">
+                </div>
             </div>
         </section>
+        <canvas id="c_captureArea"  width="360" height="420px"> </canvas>
+
     </page>
 
     <page class="page2">
         <header>
-            <button class="p_reshot">
+            <div class="p_reshot">
                 <img src="image/camera.png" alt="" height="40px" width="100px">    
-            </button>    
+            </div>    
             <div class="menu">
                 <button class="dot">
                     <img src="image/menu.PNG" alt="">
